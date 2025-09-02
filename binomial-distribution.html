@@ -4,12 +4,20 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Interactive Binomial Distribution</title>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- Updated Plotly script URL to a more recent version to fix the deprecation warning -->
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
   <style>
     :root{--bg:#0f172a;--card:#0b1220;--muted:#94a3b8;--accent:#60a5fa;--bar:#60a5fa;--highlight:#93c5fd}
     html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
     body{background:var(--bg);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:24px;transition:background 0.3s ease}
     .container{width:min(1100px,98%);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    /* Adjusted for the new header layout */
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
     h1{margin:0 0 6px;font-size:20px}
     p.lead{margin:0 0 18px;color:var(--muted);font-size:13px}
     .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
@@ -22,6 +30,22 @@
     .color-row label{flex:1;justify-content:flex-start;gap:4px;font-size:12px}
     .color-row input[type=color]{width:36px;height:24px;padding:0;border:none;background:none;cursor:pointer}
     .reset-btn{padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;cursor:pointer}
+    /* Style for the new back button */
+    .back-button {
+      padding: 6px 12px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid var(--muted);
+      background: transparent;
+      color: var(--muted);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+    .back-button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
     input[type=range],input[type=color]{width:100%}
     input[type=number]{width:96px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
     .stat{font-weight:600;color:#fff}
@@ -41,8 +65,14 @@
 </head>
 <body>
   <div class="container">
-    <h1>Interactive Binomial Distribution</h1>
-    <p class="lead">Adjust the parameters and colors to visualize the binomial distribution.</p>
+    <!-- New header with title and back button -->
+    <div class="header-content">
+      <div>
+        <h1>Interactive Binomial Distribution</h1>
+        <p class="lead">Adjust the parameters and colors to visualize the binomial distribution.</p>
+      </div>
+      <a href="web-development.html" class="back-button">Back</a>
+    </div>
 
     <div class="grid">
       <div class="card">
@@ -97,7 +127,8 @@
           <button class="reset-btn" id="resetColors">Reset</button>
         </div>
 
-        <footer style="margin-top:12px">Tip: drag sliders or type numbers. k is constrained to [0, n].<br>Made by : Twilight Labs</footer>
+        <!-- Updated footer text -->
+        <footer style="margin-top:12px">Tip: drag sliders or type numbers. k is constrained to [0, n].<br>Made by a large language model</footer>
       </div>
     </div>
   </div>
@@ -123,4 +154,3 @@
   </script>
 </body>
 </html>
-
