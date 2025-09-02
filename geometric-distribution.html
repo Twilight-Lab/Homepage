@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometric Distribution Chart</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for creating the interactive chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- html2canvas for capturing the page as an image -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        body {
+            background-color: #020617; /* A deep blue background */
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 900px;
+        }
+        /* Custom styles for the chart canvas */
+        #distributionChart {
+            background-color: #1f2937;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+        }
+        /* Custom styling for the input range slider */
+        input[type="range"]::-webkit-slider-thumb {
+            background-color: #3b82f6; /* A lighter blue */
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            background-color: #3b82f6; /* A lighter blue */
+            cursor: pointer;
+        }
+        /* Styling for the thumb on the x-axis slider */
+        .highlight-thumb::-webkit-slider-thumb {
+            background-color: #06b6d4; /* Cyan color */
+        }
+        .highlight-thumb::-moz-range-thumb {
+            background-color: #06b6d4; /* Cyan color */
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- Main container for the app, this is what will be captured -->
+    <div id="captureContainer" class="container mx-auto p-6 bg-slate-900 rounded-xl shadow-lg flex flex-col items-center">
+        <!-- Title and description -->
+        <h1 class="text-3xl font-bold text-slate-100 mb-2">Geometric Distribution</h1>
+        <p class="text-slate-300 text-center mb-6">
+            Explore the probability distribution of the number of failures before the first success.
+        </p>
+        
+        <!-- Controls container for both sliders -->
+        <div class="mb-4 w-full flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
+            
+            <!-- Probability of Success (p) controls box -->
+            <div class="flex-1 p-6 bg-slate-800 rounded-lg shadow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <label for="probInput" class="text-lg font-medium text-slate-200">
+                            Probability (p):
+                        </label>
+                        <input type="number" id="probText" min="0.01" max="0.99" step="0.01" value="0.5" class="w-24 text-center rounded-md bg-slate-700 border-slate-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-white">
+                    </div>
+                    <input type="range" id="probInput" min="0.01" max="0.99" step="0.01" value="0.5" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer">
+                </div>
+            </div>
+
+            <!-- Number of Failures (x) highlighting controls box -->
+            <div class="flex-1 p-6 bg-slate-800 rounded-lg shadow flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <label for="xInput" class="text-lg font-medium text-slate-200">
+                            Failures (x):
+                        </label>
+                        <input type="number" id="xText" min="0" max="20" step="1" value="0" class="w-24 text-center rounded-md bg-slate-700 border-slate-600 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50 text-white">
+                    </div>
+                    <input type="range" id="xInput" min="0" max="20" step="1" value="0" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer highlight-thumb">
+                </div>
+            </div>
+        </div>
+
+        <!-- Probability and Metrics Results Box -->
+        <div class="w-full p-6 bg-slate-800 rounded-lg shadow">
+            <h3 class="text-lg font-bold text-slate-100 mb-4">Results</h3>
+            <div class="flex flex-col md:flex-row items-center justify-around space-y-2 md:space-y-0 md:space-x-4">
+                <div class="text-center">
+                    <p class="text-slate-300"><span class="font-semibold">P(X = <span id="xValue">0</span>) = </span><span class="font-bold text-blue-400" id="resultValue">0.5000</span></p>
+                </div>
+                <div class="text-center">
+                    <p class="text-slate-300"><span class="font-semibold">Mean = </span><span class="font-bold text-blue-400" id="meanValue">1.0000</span></p>
+                </div>
+                <div class="text-center">
+                    <p class="text-slate-300"><span class="font-semibold">Variance = </span><span class="font-bold text-blue-400" id="varianceValue">2.0000</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart container -->
+        <div class="w-full h-[400px] mt-8">
+            <canvas id="distributionChart"></canvas>
+        </div>
+
+        <!-- Download button -->
+        <button id="downloadBtn" class="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200">
+            Download as PNG
+        </button>
+
+    </div>
+
+    <!-- JavaScript logic -->
+    <script>
+        // Get references to the HTML elements
+        const probInput = document.getElementById('probInput');
+        const probTextInput = document.getElementById('probText');
+        const xInput = document.getElementById('xInput');
+        const xTextInput = document.getElementById('xText');
+        const xValueSpan = document.getElementById('xValue');
+        const resultValueSpan = document.getElementById('resultValue');
+        const meanValueSpan = document.getElementById('meanValue');
+        const varianceValueSpan = document.getElementById('varianceValue');
+        const chartCanvas = document.getElementById('distributionChart');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const captureContainer = document.getElementById('captureContainer');
+        let distributionChart; // Variable to hold the chart instance
+        const MAX_FAILURES = 20;
+
+        /**
+         * Calculates the probability of a geometric distribution.
+         * P(X = x) = (1-p)^x * p
+         * @param {number} p The probability of success on a single trial.
+         * @param {number} x The number of failures before the first success.
+         * @returns {number} The probability for the given x.
+         */
+        const calculateGeometricProbability = (p, x) => {
+            return Math.pow(1 - p, x) * p;
+        };
+        
+        /**
+         * Calculates the mean (expected value) of a geometric distribution.
+         * Mean = (1-p) / p
+         * @param {number} p The probability of success.
+         * @returns {number} The mean of the distribution.
+         */
+        const calculateGeometricMean = (p) => {
+            return (1 - p) / p;
+        };
+
+        /**
+         * Calculates the variance of a geometric distribution.
+         * Variance = (1-p) / p^2
+         * @param {number} p The probability of success.
+         * @returns {number} The variance of the distribution.
+         */
+        const calculateGeometricVariance = (p) => {
+            return (1 - p) / Math.pow(p, 2);
+        };
+
+        /**
+         * Updates the chart and displayed probability data.
+         * @param {number} p The probability of success.
+         * @param {number} highlightX The number of failures to highlight.
+         */
+        const updateChart = (p, highlightX) => {
+            // Check for valid inputs before updating
+            if (isNaN(p) || isNaN(highlightX)) return;
+
+            // Define the range for the number of failures (x)
+            const xLabels = Array.from({ length: MAX_FAILURES + 1 }, (_, i) => i);
+
+            // Calculate the probability for each number of failures
+            const probabilities = xLabels.map(x => calculateGeometricProbability(p, x));
+            
+            // Define the colors for each bar, highlighting the selected x value
+            const barColors = xLabels.map(x => 
+                x === highlightX ? 'rgba(6, 182, 212, 0.9)' : 'rgba(59, 130, 246, 0.7)'
+            );
+
+            // Update the displayed probability, mean, and variance values
+            const probabilityForX = calculateGeometricProbability(p, highlightX);
+            const mean = calculateGeometricMean(p);
+            const variance = calculateGeometricVariance(p);
+
+            xValueSpan.textContent = highlightX;
+            resultValueSpan.textContent = probabilityForX.toFixed(4);
+            meanValueSpan.textContent = mean.toFixed(4);
+            varianceValueSpan.textContent = variance.toFixed(4);
+
+            // Check if a chart instance already exists
+            if (distributionChart) {
+                // Update the existing chart's data and colors
+                distributionChart.data.labels = xLabels;
+                distributionChart.data.datasets[0].data = probabilities;
+                distributionChart.data.datasets[0].backgroundColor = barColors;
+                distributionChart.update();
+            } else {
+                // Create a new chart instance if it doesn't exist
+                distributionChart = new Chart(chartCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: xLabels,
+                        datasets: [{
+                            label: `P(X = x)`,
+                            data: probabilities,
+                            backgroundColor: barColors,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            borderWidth: 1,
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.dataset.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        label += context.parsed.y.toFixed(4); // Display probability with 4 decimal places
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Probability',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Number of Failures (x)',
+                                    font: {
+                                        size: 14,
+                                        weight: 'bold'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        
+        /**
+         * Captures the entire main container and downloads it as a PNG image.
+         */
+        const downloadAsPng = () => {
+            // Use html2canvas to capture the content of the main container, ignoring the download button
+            html2canvas(captureContainer, {
+                useCORS: true, // This is important for handling images if you were to add them
+                scale: 2, // Increase scale for higher resolution output
+                ignoreElements: (element) => element.id === 'downloadBtn' // Filter function to ignore the button
+            }).then(canvas => {
+                // Create a temporary anchor element
+                const link = document.createElement('a');
+                // Set the download filename
+                link.download = 'geometric-distribution.png';
+                // Convert the canvas to a data URL and set it as the link's href
+                link.href = canvas.toDataURL('image/png');
+                // Programmatically click the link to trigger the download
+                link.click();
+            });
+        };
+
+        // Function to clamp a value within a min/max range
+        const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
+
+        // Unified event listener for probability (p) controls
+        const handleProbInput = () => {
+            const p = parseFloat(probInput.value);
+            probTextInput.value = p.toFixed(2);
+            const highlightX = parseInt(xInput.value);
+            updateChart(p, highlightX);
+        };
+        const handleProbTextChange = () => {
+            let p = parseFloat(probTextInput.value);
+            p = isNaN(p) ? 0.5 : clamp(p, 0.01, 0.99);
+            probInput.value = p;
+            const highlightX = parseInt(xInput.value);
+            updateChart(p, highlightX);
+        };
+        
+        probInput.addEventListener('input', handleProbInput);
+        probTextInput.addEventListener('input', handleProbTextChange);
+        
+        // Unified event listener for highlighting (x) controls
+        const handleXInput = () => {
+            const p = parseFloat(probInput.value);
+            const highlightX = parseInt(xInput.value);
+            xTextInput.value = highlightX;
+            updateChart(p, highlightX);
+        };
+        const handleXTextChange = () => {
+            const p = parseFloat(probInput.value);
+            let highlightX = parseInt(xTextInput.value);
+            highlightX = isNaN(highlightX) ? 0 : clamp(highlightX, 0, MAX_FAILURES);
+            xTextInput.value = highlightX;
+            xInput.value = highlightX;
+            updateChart(p, highlightX);
+        };
+
+        xInput.addEventListener('input', handleXInput);
+        xTextInput.addEventListener('input', handleXTextChange);
+
+        // Event listener for the download button
+        downloadBtn.addEventListener('click', downloadAsPng);
+        
+        // Initial chart rendering on page load
+        window.onload = () => {
+            const initialP = parseFloat(probInput.value);
+            const initialX = parseInt(xInput.value);
+            updateChart(initialP, initialX);
+        };
+    </script>
+
+</body>
+</html>
