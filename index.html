@@ -23,9 +23,8 @@
             <a href="#" class="text-2xl font-bold text-blue-400 tracking-wide">Twilight <span class="text-white">Labs</span></a>
             <nav class="space-x-8 hidden md:flex">
                 <a href="#home" class="text-sm font-medium hover:text-blue-400 transition-colors duration-300">Home</a>
-                <a href="#about" class="text-sm font-medium hover:text-blue-400 transition-colors duration-300">About</a>
                 <a href="#services" class="text-sm font-medium hover:text-blue-400 transition-colors duration-300">Services</a>
-                <a href="#contact" class="text-sm font-medium hover:text-blue-400 transition-colors duration-300">Contact</a>
+                <a href="#about" class="text-sm font-medium hover:text-blue-400 transition-colors duration-300">About</a>
             </nav>
             <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -39,9 +38,8 @@
     <div id="mobile-menu" class="hidden md:hidden fixed top-0 left-0 w-full h-full bg-slate-950 z-40 transition-transform duration-300 ease-in-out transform -translate-y-full">
         <div class="flex flex-col items-center justify-center h-full space-y-8 text-2xl font-semibold">
             <a href="#home" class="text-white hover:text-blue-400 transition-colors duration-300">Home</a>
-            <a href="#about" class="text-white hover:text-blue-400 transition-colors duration-300">About</a>
             <a href="#services" class="text-white hover:text-blue-400 transition-colors duration-300">Services</a>
-            <a href="#contact" class="text-white hover:text-blue-400 transition-colors duration-300">Contact</a>
+            <a href="#about" class="text-white hover:text-blue-400 transition-colors duration-300">About</a>
         </div>
     </div>
 
@@ -59,6 +57,36 @@
                 </p>
                 <a href="#services" class="inline-block px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-700 rounded-full shadow-lg transition-transform transform hover:scale-105 duration-300 ease-in-out">
                     Explore Our Services
+                </a>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section id="services" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-400 mb-2">Our Services</h2>
+                <p class="text-md text-slate-400 max-w-3xl mx-auto">From concept to launch, we offer a full spectrum of digital services to meet your needs.</p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service Card 1 -->
+                <a href="web-development.html" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
+                    <div class="mb-4 text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Web Development</h3>
+                    <p class="text-slate-400 text-sm">Building powerful, scalable, and secure websites and web applications with modern frameworks.</p>
+                </a>
+                <!-- Service Card 3 -->
+                <a href="web-development.html" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
+                    <div class="mb-4 text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">UI/UX Design</h3>
+                    <p class="text-slate-400 text-sm">Creating intuitive and visually stunning user interfaces that provide seamless user experiences.</p>
                 </a>
             </div>
         </section>
@@ -82,75 +110,6 @@
                     <h3 class="text-xl font-semibold text-white mb-2">Our Team</h3>
                     <p class="text-slate-400 text-sm">A diverse group of experts in web development, mobile apps, UI/UX design, and strategic consulting, ready to tackle any challenge.</p>
                 </div>
-            </div>
-        </section>
-
-        <!-- Services Section -->
-        <section id="services" class="py-16 md:py-24">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-blue-400 mb-2">Our Services</h2>
-                <p class="text-md text-slate-400 max-w-3xl mx-auto">From concept to launch, we offer a full spectrum of digital services to meet your needs.</p>
-            </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Service Card 1 -->
-                <a href="web-development.html" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
-                    <div class="mb-4 text-blue-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Web Development</h3>
-                    <p class="text-slate-400 text-sm">Building powerful, scalable, and secure websites and web applications with modern frameworks.</p>
-                </a>
-                <!-- Service Card 2 -->
-                <a href="mobile-apps.html" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
-                    <div class="mb-4 text-blue-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">Mobile Apps</h3>
-                    <p class="text-slate-400 text-sm">Crafting native and cross-platform mobile experiences for iOS and Android that engage users.</p>
-                </a>
-                <!-- Service Card 3 -->
-                <a href="ui-ux-design.html" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
-                    <div class="mb-4 text-blue-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-semibold text-white mb-2">UI/UX Design</h3>
-                    <p class="text-slate-400 text-sm">Creating intuitive and visually stunning user interfaces that provide seamless user experiences.</p>
-                </a>
-            </div>
-        </section>
-
-        <!-- Contact Section -->
-        <section id="contact" class="py-16 md:py-24">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl md:text-4xl font-bold text-blue-400 mb-2">Contact Us</h2>
-                <p class="text-md text-slate-400 max-w-3xl mx-auto">Ready to start your project? We'd love to hear from you.</p>
-            </div>
-            <div class="max-w-lg mx-auto bg-slate-800 p-8 rounded-xl shadow-lg">
-                <form action="#" method="POST" class="space-y-6">
-                    <div>
-                        <label for="name" class="block text-sm font-medium text-slate-300">Name</label>
-                        <input type="text" id="name" name="name" class="mt-1 block w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500" required>
-                    </div>
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-slate-300">Email</label>
-                        <input type="email" id="email" name="email" class="mt-1 block w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500" required>
-                    </div>
-                    <div>
-                        <label for="message" class="block text-sm font-medium text-slate-300">Message</label>
-                        <textarea id="message" name="message" rows="4" class="mt-1 block w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:ring-blue-500 focus:border-blue-500" required></textarea>
-                    </div>
-                    <div class="text-center">
-                        <button type="submit" class="px-8 py-3 text-lg font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-700 rounded-full shadow-lg transition-transform transform hover:scale-105 duration-300">
-                            Send Message
-                        </button>
-                    </div>
-                </form>
             </div>
         </section>
     </main>
