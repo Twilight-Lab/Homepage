@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for creating the interactive chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <!-- html2canvas for capturing the page as an image -->
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         body {
             background-color: #020617; /* A deep blue background */
@@ -108,12 +106,6 @@
         <div class="w-full h-[400px] mt-8">
             <canvas id="distributionChart"></canvas>
         </div>
-
-        <!-- Download button -->
-        <button id="downloadBtn" class="mt-8 px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200">
-            Download as PNG
-        </button>
-
     </div>
 
     <!-- JavaScript logic -->
@@ -128,7 +120,6 @@
         const meanValueSpan = document.getElementById('meanValue');
         const varianceValueSpan = document.getElementById('varianceValue');
         const chartCanvas = document.getElementById('distributionChart');
-        const downloadBtn = document.getElementById('downloadBtn');
         const captureContainer = document.getElementById('captureContainer');
         let distributionChart; // Variable to hold the chart instance
         const MAX_FAILURES = 30;
@@ -264,27 +255,6 @@
             }
         };
         
-        /**
-         * Captures the entire main container and downloads it as a PNG image.
-         */
-        const downloadAsPng = () => {
-            // Use html2canvas to capture the content of the main container, ignoring the download button
-            html2canvas(captureContainer, {
-                useCORS: true, // This is important for handling images if you were to add them
-                scale: 2, // Increase scale for higher resolution output
-                ignoreElements: (element) => element.id === 'downloadBtn' // Filter function to ignore the button
-            }).then(canvas => {
-                // Create a temporary anchor element
-                const link = document.createElement('a');
-                // Set the download filename
-                link.download = 'geometric-distribution.png';
-                // Convert the canvas to a data URL and set it as the link's href
-                link.href = canvas.toDataURL('image/png');
-                // Programmatically click the link to trigger the download
-                link.click();
-            });
-        };
-
         // Function to clamp a value within a min/max range
         const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
 
@@ -324,9 +294,6 @@
 
         xInput.addEventListener('input', handleXInput);
         xTextInput.addEventListener('input', handleXTextChange);
-
-        // Event listener for the download button
-        downloadBtn.addEventListener('click', downloadAsPng);
         
         // Initial chart rendering on page load
         window.onload = () => {
