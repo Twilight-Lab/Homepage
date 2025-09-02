@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interactive Binomial Distribution</title>
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <style>
+    :root{--bg:#0f172a;--card:#0b1220;--muted:#94a3b8;--accent:#60a5fa;--bar:#60a5fa;--highlight:#93c5fd}
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    body{background:var(--bg);color:#e6eef8;display:flex;align-items:center;justify-content:center;padding:24px;transition:background 0.3s ease}
+    .container{width:min(1100px,98%);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:12px;padding:18px;box-shadow:0 8px 30px rgba(2,6,23,0.6)}
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted);font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:18px}
+    .card{background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    #plot{height:460px}
+    .controls{display:flex;flex-direction:column;gap:12px}
+    label{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+    .row{display:flex;gap:10px;align-items:center}
+    .color-row{display:flex;gap:8px;align-items:center;flex-wrap:nowrap;justify-content:space-between}
+    .color-row label{flex:1;justify-content:flex-start;gap:4px;font-size:12px}
+    .color-row input[type=color]{width:36px;height:24px;padding:0;border:none;background:none;cursor:pointer}
+    .reset-btn{padding:4px 8px;font-size:12px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit;cursor:pointer}
+    input[type=range],input[type=color]{width:100%}
+    input[type=number]{width:96px;padding:6px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:inherit}
+    .stat{font-weight:600;color:#fff}
+    footer{margin-top:12px;color:var(--muted);font-size:13px}
+    @media (max-width:920px){.grid{grid-template-columns:1fr}}
+
+    /* NEW: Keep select text muted, but dropdown options black text on white */
+    #modeSelect {
+      color: var(--muted);
+      background: transparent;
+    }
+    #modeSelect option {
+      color: black;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Interactive Binomial Distribution</h1>
+    <p class="lead">Adjust the parameters and colors to visualize the binomial distribution.</p>
+
+    <div class="grid">
+      <div class="card">
+        <div id="plot"></div>
+      </div>
+
+      <div class="card controls">
+        <div>
+          <label>Number of trials n: <span id="nLabel" class="stat">20</span></label>
+          <div class="row"><input id="nRange" type="range" min="1" max="200" step="1" value="20"><input id="nNum" type="number" min="1" max="200" value="20"></div>
+        </div>
+
+        <div>
+          <label>Probability of success p: <span id="pLabel" class="stat">0.50</span></label>
+          <div class="row"><input id="pRange" type="range" min="0" max="1" step="0.01" value="0.5"><input id="pNum" type="number" min="0" max="1" step="0.01" value="0.5"></div>
+        </div>
+
+        <div>
+          <label>Highlight successful trials k: <span id="kLabel" class="stat">10</span></label>
+          <div class="row"><input id="kRange" type="range" min="0" max="20" step="1" value="10"><input id="kNum" type="number" min="0" max="200" step="1" value="10"></div>
+        </div>
+
+        <div>
+          <label>Mode</label>
+          <div class="row">
+            <select id="modeSelect" style="padding:6px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.06)">
+              <option value="pmf">PMF (probability mass)</option>
+              <option value="cdf">CDF (cumulative)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card" style="background:transparent;padding:10px;box-shadow:none;border:1px dashed rgba(255,255,255,0.03)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:12px;color:var(--muted)">Selected probability</div>
+              <div style="font-size:18px;font-weight:700" id="probDisplay">P(X = 10) = 0.176</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:12px;color:var(--muted)">Expected value</div>
+              <div style="font-size:16px;font-weight:700" id="meanDisplay">np = 10.0</div>
+              <div style="font-size:12px;color:var(--muted)">Variance</div>
+              <div style="font-size:14px;font-weight:600" id="varDisplay">np(1-p) = 5.0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="color-row" style="margin-top:8px;">
+          <label>BG<input type="color" id="bgColor" value="#0f172a"></label>
+          <label>Bar<input type="color" id="barColor" value="#60a5fa"></label>
+          <label>Highlight<input type="color" id="highlightColor" value="#93c5fd"></label>
+          <button class="reset-btn" id="resetColors">Reset</button>
+        </div>
+
+        <footer style="margin-top:12px">Tip: drag sliders or type numbers. k is constrained to [0, n].<br>Made by : GPT 5</footer>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function nCr(n, r){r=Math.max(0,Math.min(r,n));if(r===0||r===n)return 1;r=Math.min(r,n-r);let numer=1;let denom=1;for(let i=1;i<=r;i++){numer*=(n-r+i);denom*=i;}return numer/denom;}
+    function binomPMF(k,n,p){if(k<0||k>n)return 0;const c=nCr(n,k);return c*Math.pow(p,k)*Math.pow(1-p,n-k);}
+    function binomCDF(k,n,p){let s=0;for(let i=0;i<=k;i++)s+=binomPMF(i,n,p);return s;}
+    const plotEl=document.getElementById('plot'),nRange=document.getElementById('nRange'),nNum=document.getElementById('nNum'),pRange=document.getElementById('pRange'),pNum=document.getElementById('pNum'),kRange=document.getElementById('kRange'),kNum=document.getElementById('kNum'),modeSelect=document.getElementById('modeSelect'),bgColorPicker=document.getElementById('bgColor'),barColorPicker=document.getElementById('barColor'),highlightColorPicker=document.getElementById('highlightColor'),resetBtn=document.getElementById('resetColors'),nLabel=document.getElementById('nLabel'),pLabel=document.getElementById('pLabel'),kLabel=document.getElementById('kLabel'),probDisplay=document.getElementById('probDisplay'),meanDisplay=document.getElementById('meanDisplay'),varDisplay=document.getElementById('varDisplay');
+    function syncRangeNumber(range,num){range.addEventListener('input',()=>{num.value=range.value;updateAll();});num.addEventListener('input',()=>{range.value=num.value;updateAll();});}
+    syncRangeNumber(nRange,nNum);syncRangeNumber(pRange,pNum);syncRangeNumber(kRange,kNum);
+    function clampKMax(){const n=parseInt(nRange.value,10);kRange.max=n;kNum.max=n;if(parseInt(kRange.value,10)>n){kRange.value=n;kNum.value=n;}}
+    nRange.addEventListener('input',()=>{clampKMax();});
+    nNum.addEventListener('input',()=>{clampKMax();});
+    function getState(){const n=Math.max(1,Math.min(200,parseInt(nNum.value,10)||1));let p=parseFloat(pNum.value);if(Number.isNaN(p))p=0.5;p=Math.max(0,Math.min(1,p));let k=Math.max(0,Math.min(n,parseInt(kNum.value,10)||0));return {n,p,k,mode:modeSelect.value,bg:bgColorPicker.value,bar:barColorPicker.value,highlight:highlightColorPicker.value};}
+    function updateAll(){const {n,p,k,mode,bg,bar,highlight}=getState();nLabel.textContent=n;pLabel.textContent=p.toFixed(2);kLabel.textContent=k;document.body.style.background=bg;const xs=[],ys=[];for(let i=0;i<=n;i++){xs.push(i);ys.push(mode==='pmf'?binomPMF(i,n,p):binomCDF(i,n,p));}const colors=ys.map((_,i)=>i===k?highlight:bar+'55');const trace={x:xs,y:ys,type:'bar',marker:{color:colors},hovertemplate:mode==='pmf'?'k=%{x}<br>P=%{y:.6f}<extra></extra>':'k≤%{x}<br>P≤%{y:.6f}<extra></extra>'};Plotly.newPlot(plotEl,[trace],{margin:{l:30,r:10,b:40,t:20},plot_bgcolor:'transparent',paper_bgcolor:'transparent',font:{color:'#e6eef8'}}, {displayModeBar:false,staticPlot:true});const prob=mode==='pmf'?binomPMF(k,n,p):binomCDF(k,n,p);probDisplay.textContent=`P(X ${mode==='pmf'?'=':'≤'} ${k}) = ${prob.toFixed(6)}`;meanDisplay.textContent=`np = ${(n*p).toFixed(2)}`;varDisplay.textContent=`np(1-p) = ${(n*p*(1-p)).toFixed(2)}`;}
+    modeSelect.addEventListener('change',updateAll);
+    bgColorPicker.addEventListener('input',updateAll);
+    barColorPicker.addEventListener('input',updateAll);
+    highlightColorPicker.addEventListener('input',updateAll);
+    resetBtn.addEventListener('click',()=>{bgColorPicker.value='#0f172a';barColorPicker.value='#60a5fa';highlightColorPicker.value='#93c5fd';updateAll();});
+    updateAll();
+  </script>
+</body>
+</html>
