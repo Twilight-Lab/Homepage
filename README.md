@@ -1,3 +1,6 @@
-Twilight Lab is a creative powerhouse, crafting cutting-edge digital solutions that transform ideas into reality.
+🌌 Twilight Lab ✨
+Where imagination meets innovation 🚀
+Building digital worlds 🌍 with code 💻, design 🎨 & AI 🤖
+Turning ideas into reality 🌟
 
-https://twilight-lab.github.io/Homepage/
+🌐 https://twilight-lab.github.io/Homepage/ 🌐
