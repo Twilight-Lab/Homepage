@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hypergeometric Distribution Chart</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- D3.js for creating the chart -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617; /* Deep blue background */
+        }
+        .chart-container {
+            border: 2px solid #334155; /* Slate-700 */
+            background-color: #1f2937; /* Slate-800 */
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1-px rgba(0, 0, 0, 0.06);
+        }
+        /* Custom styles for the SVG chart */
+        .bar {
+            fill: #3b82f6; /* Blue-500 */
+            transition: fill 0.3s ease;
+        }
+        .bar.highlight {
+            fill: #ef4444; /* Red-500 */
+        }
+        .axis path, .axis line {
+            fill: none;
+            stroke: #94a3b8; /* Slate-400 */
+            shape-rendering: crispEdges;
+        }
+        .axis text {
+            font-size: 0.875rem; /* text-sm */
+            fill: #cbd5e1; /* Slate-300 */
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 flex items-center justify-center min-h-screen p-4">
+
+    <div class="max-w-4xl w-full mx-auto">
+        <div class="bg-slate-900 rounded-xl shadow-lg p-6 md:p-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-center text-white mb-6">Hypergeometric Distribution Chart</h1>
+            <p class="text-center text-slate-400 mb-8">
+                Enter the population and sample parameters to visualize the probability distribution.
+            </p>
+
+            <!-- Input Controls -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 items-end">
+                <div class="flex flex-col">
+                    <label for="populationSize" class="text-sm font-medium text-slate-300 mb-1">Population Size (N):</label>
+                    <input type="number" id="populationSize" value="20" class="w-full rounded-lg border border-slate-600 bg-slate-800 text-white p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div class="flex flex-col">
+                    <label for="successesPop" class="text-sm font-medium text-slate-300 mb-1">Successes in Population (K):</label>
+                    <input type="number" id="successesPop" value="7" class="w-full rounded-lg border border-slate-600 bg-slate-800 text-white p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div class="flex flex-col">
+                    <label for="sampleSize" class="text-sm font-medium text-slate-300 mb-1">Sample Size (n):</label>
+                    <input type="number" id="sampleSize" value="5" class="w-full rounded-lg border border-slate-600 bg-slate-800 text-white p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div class="flex flex-col">
+                    <label for="specificX" class="text-sm font-medium text-slate-300 mb-1">Highlight x:</label>
+                    <input type="number" id="specificX" value="2" class="w-full rounded-lg border border-slate-600 bg-slate-800 text-white p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+            </div>
+
+            <!-- Output -->
+            <div id="result" class="flex justify-between items-center text-lg font-semibold text-slate-300 mb-6 w-full"></div>
+
+            <!-- Chart Container -->
+            <div id="chart-container" class="chart-container overflow-x-auto">
+                <svg id="chart" class="w-full"></svg>
+            </div>
+            <div id="error-message" class="text-center text-red-400 mt-4 hidden"></div>
+
+        </div>
+    </div>
+
+    <script>
+        // Global variables for D3 chart
+        let svg, margin, width, height, xScale, yScale;
+
+        // --- Core Functions ---
+
+        /**
+         * Calculates combinations (nCk).
+         * @param {number} n The total number of items.
+         * @param {number} k The number of items to choose.
+         * @returns {number} The number of combinations.
+         */
+        function combinations(n, k) {
+            if (k < 0 || k > n) return 0;
+            if (k === 0 || k === n) return 1;
+            if (k > n / 2) k = n - k;
+            let res = 1;
+            for (let i = 1; i <= k; i++) {
+                res = res * (n - i + 1) / i;
+            }
+            return res;
+        }
+
+        /**
+         * Calculates the Hypergeometric Probability Mass Function (PMF).
+         * @param {number} x Number of successes in the sample.
+         * @param {number} N Population size.
+         * @param {number} K Number of successes in the population.
+         * @param {number} n Sample size.
+         * @returns {number} The probability P(X=x).
+         */
+        function hypergeometricPMF(x, N, K, n) {
+            const term1 = combinations(K, x);
+            const term2 = combinations(N - K, n - x);
+            const term3 = combinations(N, n);
+            return term3 === 0 ? 0 : (term1 * term2) / term3;
+        }
+
+        /**
+         * Processes input, calculates distribution data, and returns results.
+         * @param {number} N Population size.
+         * @param {number} K Successes in population.
+         * @param {number} n Sample size.
+         * @param {number} xToHighlight Specific x value to highlight.
+         * @returns {{data: Array, probForX: number, mean: number, variance: number, error: string}} Calculation results.
+         */
+        function processData(N, K, n, xToHighlight) {
+            // Validate inputs
+            const minX = Math.max(0, n - (N - K));
+            const maxX = Math.min(n, K);
+            
+            // Added more specific validation checks
+            if (Number.isNaN(N) || N <= 0) {
+                 return { error: 'Population Size (N) must be a positive number.' };
+            }
+            if (Number.isNaN(K) || K < 0) {
+                 return { error: 'Successes in Population (K) cannot be negative.' };
+            }
+            if (Number.isNaN(n) || n < 0) {
+                 return { error: 'Sample Size (n) cannot be negative.' };
+            }
+            if (K > N) {
+                return { error: 'Successes in Population (K) cannot be greater than Population Size (N).' };
+            }
+            if (n > N) {
+                return { error: 'Sample Size (n) cannot be greater than Population Size (N).' };
+            }
+            if (Number.isNaN(xToHighlight) || xToHighlight < minX || xToHighlight > maxX) {
+                return { error: `The value for 'x' must be between ${minX} and ${maxX}.` };
+            }
+
+            // Generate distribution data
+            const data = [];
+            let probForX = 0;
+            for (let x = minX; x <= maxX; x++) {
+                const prob = hypergeometricPMF(x, N, K, n);
+                data.push({ x: x, probability: prob });
+                if (x === xToHighlight) {
+                    probForX = prob;
+                }
+            }
+
+            // Calculate mean and variance
+            const mean = n * (K / N);
+            const variance = n * (K / N) * ((N - K) / N) * ((N - n) / (N - 1));
+
+            return { data, probForX, mean, variance };
+        }
+
+        /**
+         * Draws the D3 chart based on the provided data.
+         * @param {Array} data The distribution data.
+         * @param {number} xToHighlight The x value to highlight on the chart.
+         */
+        function drawChart(data, xToHighlight) {
+            // Clear previous chart content
+            d3.select('#chart').selectAll('*').remove();
+            
+            const container = document.getElementById('chart-container');
+            const containerWidth = container.offsetWidth;
+            const containerHeight = 400;
+
+            const margin = { top: 20, right: 30, bottom: 60, left: 50 };
+            const width = containerWidth - margin.left - margin.right;
+            const height = containerHeight - margin.top - margin.bottom;
+
+            const svg = d3.select('#chart')
+                .attr('width', containerWidth)
+                .attr('height', containerHeight)
+                .append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            const xScale = d3.scaleBand()
+                .domain(data.map(d => d.x))
+                .range([0, width])
+                .padding(0.1);
+
+            const yScale = d3.scaleLinear()
+                .domain([0, 1])
+                .range([height, 0]);
+
+            // Draw bars
+            svg.selectAll('.bar')
+                .data(data)
+                .enter()
+                .append('rect')
+                .attr('class', d => `bar ${d.x === xToHighlight ? 'highlight' : ''}`)
+                .attr('x', d => xScale(d.x))
+                .attr('y', d => yScale(d.probability))
+                .attr('width', xScale.bandwidth())
+                .attr('height', d => height - yScale(d.probability))
+                .append('title')
+                .text(d => `x = ${d.x}, P(X=x) = ${d.probability.toFixed(4)}`);
+
+            // Draw axes
+            svg.append('g')
+                .attr('class', 'axis')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(xScale));
+
+            svg.append('g')
+                .attr('class', 'axis')
+                .call(d3.axisLeft(yScale));
+
+            // Add axis labels
+            svg.append('text')
+                .attr('class', 'axis-label')
+                .attr('text-anchor', 'middle')
+                .attr('x', width / 2)
+                .attr('y', height + margin.bottom - 10)
+                .text('Number of Successes in Sample (x)');
+
+            svg.append('text')
+                .attr('class', 'axis-label')
+                .attr('text-anchor', 'middle')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', -margin.left + 15)
+                .attr('x', -height / 2)
+                .text('Probability');
+        }
+
+        // --- Main Logic and Event Handlers ---
+        
+        // Debounce function to limit how often a function is called
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
+
+        // Main function to trigger the chart update
+        function updateChart() {
+            // Get user input values
+            const N = Number(document.getElementById('populationSize').value);
+            const K = Number(document.getElementById('successesPop').value);
+            const n = Number(document.getElementById('sampleSize').value);
+            const xToHighlight = Number(document.getElementById('specificX').value);
+            
+            // Process the data and check for errors
+            const { data, probForX, mean, variance, error } = processData(N, K, n, xToHighlight);
+            
+            const errorMessageDiv = document.getElementById('error-message');
+            const resultDiv = document.getElementById('result');
+
+            // Handle errors
+            if (error) {
+                errorMessageDiv.textContent = error;
+                errorMessageDiv.classList.remove('hidden');
+                resultDiv.textContent = '';
+                d3.select('#chart').selectAll('*').remove();
+                return;
+            }
+            
+            // Clear error message and update results display
+            errorMessageDiv.classList.add('hidden');
+            resultDiv.innerHTML = `
+                <span class="text-left">P(X=${xToHighlight}) = ${probForX.toFixed(4)}</span>
+                <span class="text-center">Mean = ${mean.toFixed(4)}</span>
+                <span class="text-right">Variance = ${variance.toFixed(4)}</span>
+            `;
+
+            // Draw the chart
+            drawChart(data, xToHighlight);
+        }
+
+        // Event listeners for all input fields
+        const inputIds = ['populationSize', 'successesPop', 'sampleSize', 'specificX'];
+        inputIds.forEach(id => {
+            document.getElementById(id).addEventListener('input', updateChart);
+        });
+
+        // Initial chart generation on page load
+        window.onload = updateChart;
+
+        // Handle window resizing with debounce to make the chart more responsive
+        window.addEventListener('resize', debounce(updateChart, 250));
+    </script>
+</body>
+</html>
