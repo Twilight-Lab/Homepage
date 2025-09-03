@@ -1,7 +1,7 @@
 🌌 Twilight Lab ✨
-<p>Where imagination meets innovation 🚀
-Building digital worlds 🌍 with code 💻 design 🎨 & AI 🤖
-Turning ideas into reality 🌟
+<p>Where imagination meets innovation 🚀</p>
+<p>Building digital worlds 🌍 with code 💻 design 🎨 & AI 🤖</p>
+</p>Turning ideas into reality 🌟</p>
 
 🌐 https://twilight-lab.github.io/Homepage/ 🌐
-</p>
+
