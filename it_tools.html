@@ -1,1 +1,130 @@
-<h3>Under Maintenance</h3>
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IT Solutions & Tools - Twilight Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-slate-950 text-slate-200;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-sm shadow-lg p-4 transition-all duration-300 ease-in-out">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-blue-400 tracking-wide">Twilight <span class="text-white">Lab</span></a>
+            <nav class="space-x-8 hidden md:flex items-center">
+                <!-- Back button -->
+                <a href="index.html" class="flex items-center space-x-1 text-sm font-medium hover:text-blue-400 transition-colors duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span>Back</span>
+                </a>
+            </nav>
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden fixed top-0 left-0 w-full h-full bg-slate-950 z-40 transition-transform duration-300 ease-in-out transform -translate-y-full">
+        <div class="flex flex-col items-center justify-center h-full space-y-8 text-2xl font-semibold">
+            <a href="index.html" class="flex items-center space-x-1 text-sm font-medium hover:text-blue-400 transition-colors duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Back</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="it-tools" class="py-16 md:py-24">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-4">
+                    IT Solutions & <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">Tools</span>
+                </h1>
+                <p class="text-md md:text-xl text-slate-400 max-w-2xl mx-auto">
+                    A suite of essential tools designed to streamline your digital tasks.
+                </p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Tool Card: Password Generator -->
+                <a href="https://twilight-lab.github.io/Password-Generator/" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
+                    <div class="mb-4 text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Password Generator</h3>
+                    <p class="text-slate-400 text-sm">Create strong, random, and secure passwords instantly.</p>
+                </a>
+                <!-- Tool Card: Hash Converter -->
+                <a href="https://twilight-lab.github.io/HashConverter/" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
+                    <div class="mb-4 text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">Hash Converter</h3>
+                    <p class="text-slate-400 text-sm">Convert text into various cryptographic hash formats (e.g., MD5, SHA-256).</p>
+                </a>
+                <!-- Tool Card: QR Generator -->
+                <a href="https://twilight-lab.github.io/Qr-generator/" class="p-8 bg-slate-800 rounded-xl shadow-lg flex flex-col items-center text-center transition-transform transform hover:scale-105 duration-300">
+                    <div class="mb-4 text-blue-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-white mb-2">QR Generator</h3>
+                    <p class="text-slate-400 text-sm">Generate QR codes from any text or URL.</p>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 mt-16 py-8 border-t border-slate-800 text-center">
+        <div class="container mx-auto px-4">
+            <p class="text-sm text-slate-500">&copy; 2025 Twilight Lab. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Mobile Menu -->
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('transform');
+            mobileMenu.classList.toggle('-translate-y-full');
+            mobileMenu.classList.toggle('translate-y-0');
+        });
+
+        // Close mobile menu when a link is clicked
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.add('transform');
+                mobileMenu.classList.add('-translate-y-full');
+                mobileMenu.classList.remove('translate-y-0');
+            });
+        });
+    </script>
+
+</body>
+</html>
