@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poisson Distribution Grapher</title>
+    <!-- Use Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use the Inter font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+    <!-- Chart.js for the graphing -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            @apply bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen p-4;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900">
+
+    <div class="max-w-4xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden p-8 flex flex-col md:flex-row gap-8">
+        <!-- Control Panel -->
+        <div class="w-full md:w-1/3 space-y-6">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Poisson Distribution</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+                A Poisson distribution is a discrete probability distribution that expresses the probability of a given number of events occurring in a fixed interval of time or space if these events occur with a known constant mean rate and independently of the time since the last event. The probability mass function (PMF) is given by:
+            </p>
+            <div class="my-4 text-center text-lg font-mono text-gray-900 dark:text-white">
+                $$P(k; \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}$$
+            </div>
+            
+            <div class="space-y-4">
+                <label for="lambdaInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Mean ($\lambda$):
+                </label>
+                <input type="number" id="lambdaInput" min="0" step="0.1" value="3.5"
+                       class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm
+                       focus:border-indigo-500 focus:ring-indigo-500 bg-gray-50 dark:bg-gray-700
+                       text-gray-900 dark:text-white p-2">
+            </div>
+
+            <button id="generateButton"
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md
+                    shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+                    transition-colors duration-200 ease-in-out">
+                Generate Graph
+            </button>
+            
+            <div id="probability-list" class="mt-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Key Probabilities</h3>
+                <ul class="text-sm text-gray-600 dark:text-gray-400 space-y-1">
+                    <!-- Probabilities will be displayed here -->
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Graph Container -->
+        <div class="w-full md:w-2/3 flex items-center justify-center">
+            <canvas id="poissonChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- DOM Element References ---
+            const lambdaInput = document.getElementById('lambdaInput');
+            const generateButton = document.getElementById('generateButton');
+            const chartCanvas = document.getElementById('poissonChart');
+            const probabilityList = document.querySelector('#probability-list ul');
+
+            let myChart; // Store the chart instance
+
+            // --- Core Functions ---
+
+            // Function to calculate factorial
+            const factorial = (n) => {
+                if (n < 0) return 0;
+                if (n === 0) return 1;
+                let result = 1;
+                for (let i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            };
+
+            // Function to calculate Poisson Probability Mass Function (PMF)
+            const poissonPMF = (k, lambda) => {
+                // P(k; λ) = (λ^k * e^-λ) / k!
+                return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+            };
+
+            // Function to generate and display the graph
+            const generateGraph = () => {
+                const lambda = parseFloat(lambdaInput.value);
+                if (isNaN(lambda) || lambda < 0) {
+                    // Using a custom message box instead of alert()
+                    const messageBox = document.createElement('div');
+                    messageBox.className = "fixed bottom-4 right-4 bg-red-500 text-white p-4 rounded-md shadow-lg transition-transform transform translate-x-full duration-300 ease-in-out";
+                    messageBox.innerHTML = "Please enter a valid non-negative mean ($\lambda$).";
+                    document.body.appendChild(messageBox);
+                    
+                    setTimeout(() => {
+                        messageBox.classList.remove('translate-x-full');
+                        messageBox.classList.add('translate-x-0');
+                    }, 10);
+                    
+                    setTimeout(() => {
+                        messageBox.classList.remove('translate-x-0');
+                        messageBox.classList.add('translate-x-full');
+                        setTimeout(() => messageBox.remove(), 300);
+                    }, 3000);
+                    return;
+                }
+
+                // Determine the range of k values to display based on lambda
+                const maxK = Math.max(10, Math.ceil(lambda * 2));
+                const labels = [];
+                const data = [];
+
+                for (let k = 0; k <= maxK; k++) {
+                    labels.push(k.toString());
+                    const probability = poissonPMF(k, lambda);
+                    data.push(probability);
+                }
+
+                // Clear previous chart if it exists
+                if (myChart) {
+                    myChart.destroy();
+                }
+
+                // Create a new chart
+                myChart = new Chart(chartCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: `P(k; λ=${lambda})`,
+                            data: data,
+                            backgroundColor: 'rgba(79, 70, 229, 0.7)',
+                            borderColor: 'rgba(79, 70, 229, 1)',
+                            borderWidth: 1,
+                            borderRadius: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    title: (tooltipItems) => `k = ${tooltipItems[0].label}`,
+                                    label: (context) => `Probability: ${context.formattedValue}`
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Probability',
+                                    font: { size: 14 }
+                                },
+                                ticks: {
+                                    callback: function(value) { return value.toFixed(2); }
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Number of Events (k)',
+                                    font: { size: 14 }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Display key probabilities
+                displayProbabilities(lambda);
+            };
+
+            // Function to display key probabilities in a list
+            const displayProbabilities = (lambda) => {
+                probabilityList.innerHTML = ''; // Clear previous list
+
+                const probabilitiesToDisplay = [
+                    { label: `P(k=0)`, k: 0 },
+                    { label: `P(k=1)`, k: 1 },
+                    { label: `P(k=${Math.floor(lambda)})`, k: Math.floor(lambda) },
+                    { label: `P(k=${Math.ceil(lambda)})`, k: Math.ceil(lambda) }
+                ];
+
+                probabilitiesToDisplay.forEach(item => {
+                    const probability = poissonPMF(item.k, lambda);
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${item.label}: ${probability.toFixed(4)}`;
+                    probabilityList.appendChild(listItem);
+                });
+            };
+
+            // --- Event Listeners ---
+            generateButton.addEventListener('click', generateGraph);
+
+            // Initial graph generation on page load
+            generateGraph();
+        });
+    </script>
+
+</body>
+</html>
